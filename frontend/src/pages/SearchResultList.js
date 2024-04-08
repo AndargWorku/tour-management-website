@@ -3,11 +3,12 @@ import {Container, Row, Col} from "reactstrap"
 import {useLocation} from "react-router-dom"
 import TourCard from '../shared/TourCard'
 import CommonSection from './../shared/CommonSection'
+import Newletter from "./../shared/Newsletter"
 const SearchResultList = () => {
 
   const location=useLocation()
   const [data]=useState(location.state)
-  console.log(data)
+ 
 
   return (
     <div>
@@ -31,6 +32,7 @@ const SearchResultList = () => {
           </Row>
         </Container>
       </section>
+      <Newletter/>
     </div>
   )
 }
