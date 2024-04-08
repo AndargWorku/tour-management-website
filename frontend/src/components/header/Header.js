@@ -71,12 +71,13 @@ const Header = () => {
             <div className="nav__btns d-flex align-items-center gap-4">
 
               {
-                user? <>
+                user? (<>
                 <h5 className='mb-0'>{user.username}</h5>
                 <button className='btn btn-dark' onClick={logout}>Logout</button>
                 </>
+                )
                 :
-                <>
+                (<>
                 <button className="btn secondary__btn">
                 <Link to='/login'>Login</Link>
               </button>
@@ -84,6 +85,7 @@ const Header = () => {
                 <Link to='/register'>Register</Link>
               </button>
                 </>
+                )
               }
               
               </div>

@@ -1,4 +1,4 @@
-import React,{useEffect, useRef,useState} from 'react'
+import React,{useEffect, useRef,useState, useContext} from 'react'
 import '../styles/tour-details.css'
 import calculateAvgRating from "./../utils/aveRating"
 import {Container,Row,Col,Form,ListGroup} from "reactstrap"
@@ -9,6 +9,7 @@ import Booking from "../components/Booking/Booking"
 import Newsletter from "../shared/Newsletter"
 import useFetch from '../hooks/useFetch'
 import { BASE_URL } from '../utils/config'
+import { AuthContext } from '../context/AuthContext'
 const TourDetails = () => {
 
   const {id}=useParams()
@@ -16,6 +17,7 @@ const TourDetails = () => {
   
   const reviewMsgRef=useRef('')
   const [tourRating,setTourRating]=useState(null)
+  const {user, dispatch}=useContext(AuthContext)
   //  featch data from the database
   const {data:tour, loading, error}=useFetch(`${BASE_URL}/tours/${id}`)
   // const tour=tourData.find(tour=>tour.id===id)
@@ -36,9 +38,37 @@ const {totalRating,avgRating}=calculateAvgRating(reviews)
 const options={day:'numeric',month:'long',year:'numeric'};  
 
 //submit request to the server
-const submitHandler=e=>{
+const submitHandler= async e=>{
   e.preventDefault()
   const reviewText=reviewMsgRef.current.value;
+
+ 
+  try {
+    if(!user ||user===undefined || user===null){
+      alert('please sign in')
+    }
+    const reviewObj={
+      username:user?.username,
+      reviewText,
+      rating:tourRating
+    }
+    const res= await fetch (`${BASE_URL}/review/${id}`,{
+      method:"post",
+      headers:{
+        'content-type':'application/json'
+      },
+      credentials:'include',
+      body:JSON.stringify(reviewObj)
+    })
+    const result=await res.json();
+    if(!res.ok){
+      return  alert(result.message);
+    }
+   alert(result.message)
+  } catch (err) {
+    alert(err.message)
+    
+  }
   // alert(`${reviewText}, ${tourRating}`);
 
   //later will call our api
@@ -102,22 +132,23 @@ return (
               </Form>
               <ListGroup className="user__reviews">
                 {
-                  reviews?.map(reviews=>(
+                  reviews?.map(review=>(
                     <div className="review__item">
                       <img src={avatar} alt=" "/>
                       <div className="w-100">
                         <div className="d-flex alex-items-center justify-content-between">
                           <div>
-                            <h5>Andarg</h5>
-                            <p>{new Date("04-14-2023").toLocaleDateString('en-US', options)}</p>
+                            <h5>{review.username}</h5>
+                            <p>{new Date(review.createdAt).toLocaleDateString('en-US', options)}</p>
 
                           </div>
                           <span className="d-flex align-items-center">
-                            5<i class="ri-star-s-fill"></i>
+                            {review.rating}
+                            <i class="ri-star-s-fill"></i>
                           </span>
 
                         </div>
-                        <h6>Amazing tour</h6>
+                        <h6>{review.reviewText}</h6>
                       </div>
                     </div>
                   ))

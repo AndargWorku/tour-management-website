@@ -1,7 +1,10 @@
-import React,{useState} from 'react'
+import React,{useState, useContext} from 'react'
 import './booking.css'
 import {useNavigate} from "react-router-dom"
+import { BASE_URL } from '../../utils/config'
+import { AuthContext } from '../../context/AuthContext'
 import {Container,Row,Col,Form,FormGroup,ListGroup,ListGroupItem} from "reactstrap"
+
 
 const Booking = ({tour}) => {
   
